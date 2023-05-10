@@ -40,3 +40,17 @@ def get_all_users():
     conn.close()
 
     return user    
+
+def getUserByEmail(email):
+    conn = sqlite3.connect('database.db')  # Replace with your SQLite database file path
+    cursor = conn.cursor()
+
+    # Execute a query to fetch the user with the provided username and password
+    cursor.execute("SELECT * FROM users WHERE email=?", (email,))
+    user = cursor.fetchone()
+    # print(user)
+    if user:
+        return user
+    conn.close()
+
+    return False

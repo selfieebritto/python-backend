@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from bcrypt import hashpw, gensalt, checkpw
 
-from app.controllers.AccountController import get_all_users, register_user, validate_user
+from app.controllers.AccountController import get_all_users, getUserByEmail, register_user, validate_user
 # Create a Blueprint object for the routes
 api_bp = Blueprint('api', __name__)
 
@@ -39,7 +39,7 @@ def register():
     name = data.get('name')
 
 
-    print(data)
+    # print(data)
 
     # Perform validation checks
     if not email or not password or not confirm_password:
@@ -47,6 +47,9 @@ def register():
 
     if password != confirm_password:
         return jsonify({'error': 'Passwords do not match.'}), 400
+    user = getUserByEmail(email)
+    if user:
+        return jsonify({'error': 'Email already registered with us.'}), 400
     # Generate a salt and hash the password
     salt = gensalt()
     hashed_password = hashpw(password.encode('utf-8'), salt)
@@ -66,4 +69,4 @@ def getAllUsers():
 @jwt_required()
 def welcome_page():
     current_user = get_jwt_identity()
-    return jsonify({ "result" : 'Welcome to Sale forecast' })
+    return jsonify({ 'result' : 'Welcome to Sale forecast' })
